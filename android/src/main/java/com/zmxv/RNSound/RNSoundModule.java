@@ -470,10 +470,10 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
   }
 
   @ReactMethod
-  public void filterFrequency(final Double key, final Int frequency) {
+  public void filterFrequency(final Double key, final Integer frequency) {
     Equalizer equalizer = this.equalizePool.get(key);
     if (equalizer != null) {
-      short min = equalizer.bandLevelRange[0];
+      short min = equalizer.getBandLevelRange()[0];
       short upperBand = equalizer.getBand(frequency * 1000);
 
       if(upperBand < 0) {
@@ -488,7 +488,7 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
           equalizer.setBandLevel(i, 0);
         }
 
-        short low = (equalizer.getBandFreqRange(upperBand)[0] / 1000);
+        double low = ((double) equalizer.getBandFreqRange(upperBand)[0] / 1000);
         double one = 100/ (double)((equalizer.getBandFreqRange(upperBand)[1]/1000) - low);
         double percentage = (one * (double) (frequency - low));
         equalizer.setBandLevel(upperBand, (short) (-((min/100) * (percentage))));
