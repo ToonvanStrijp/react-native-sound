@@ -216,7 +216,7 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
     return null;
   }
 
-  protected Equalizer createEqualizer(final Int audioSessionId) {
+  protected Equalizer createEqualizer(final Integer audioSessionId) {
     Equalizer equalizer = new Equalizer(0, audioSessionId);
     return equalizer;
   }
@@ -482,10 +482,10 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
 
       if(upperBand >= 0) {
         for (short i = 0; i < upperBand; i++) {
-          equalizer.setBandLevel(i, -min);
+          equalizer.setBandLevel(i, (short) -min);
         }
         for(short i = upperBand; i < equalizer.getNumberOfBands(); i++) {
-          equalizer.setBandLevel(i, 0);
+          equalizer.setBandLevel(i, (short) 0);
         }
 
         double low = ((double) equalizer.getBandFreqRange(upperBand)[0] / 1000);
