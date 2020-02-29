@@ -477,7 +477,7 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
       short upperBand = equalizer.getBand(frequency * 1000);
 
       if(upperBand < 0) {
-        upperBand = 0
+        upperBand = 0;
       }
 
       if(upperBand >= 0) {
