@@ -3,23 +3,39 @@
 // Definitions by: Kyle Roach <https://github.com/iRoachie>
 // TypeScript Version: 2.3.2
 
-type AVAudioSessionCategory = 'Ambient' | 'SoloAmbient' | 'Playback' | 'Record' | 'PlayAndRecord' | 'AudioProcessing' | 'MultiRoute' | 'Alarm'
+type AVAudioSessionCategory =
+  | "Ambient"
+  | "SoloAmbient"
+  | "Playback"
+  | "Record"
+  | "PlayAndRecord"
+  | "AudioProcessing"
+  | "MultiRoute"
+  | "Alarm";
 
-type AVAudioSessionMode = 'Default' | 'VoiceChat' | 'VideoChat' | 'GameChat' | 'VideoRecording' | 'Measurement' | 'MoviePlayback' | 'SpokenAudio'
+type AVAudioSessionMode =
+  | "Default"
+  | "VoiceChat"
+  | "VideoChat"
+  | "GameChat"
+  | "VideoRecording"
+  | "Measurement"
+  | "MoviePlayback"
+  | "SpokenAudio";
 
-type FilenameType = string
+type FilenameType = string;
 
-type FileType = any
+type FileType = any;
 
-type BasePathType = string
+type BasePathType = string;
 
-type CallbackType = (error: any) => void
+type CallbackType = (error: any) => void;
 
 declare class Sound {
-  static MAIN_BUNDLE: string
-  static DOCUMENT: string
-  static LIBRARY: string
-  static CACHES: string
+  static MAIN_BUNDLE: string;
+  static DOCUMENT: string;
+  static LIBRARY: string;
+  static CACHES: string;
 
   /**
    * Sets AVAudioSession as active, which is recommended on iOS to achieve seamless background playback.
@@ -29,7 +45,7 @@ declare class Sound {
    * @param category AVAudioSession category
    * @param mixWithOthers Can be set to true to force mixing with other audio sessions.
    */
-  static setActive(active: boolean): void
+  static setActive(active: boolean): void;
 
   /**
    * Sets AVAudioSession category, which allows playing sound in background,
@@ -39,7 +55,10 @@ declare class Sound {
    * @param category AVAudioSession category
    * @param mixWithOthers Can be set to true to force mixing with other audio sessions.
    */
-  static setCategory(category: AVAudioSessionCategory, mixWithOthers?: boolean): void
+  static setCategory(
+    category: AVAudioSessionCategory,
+    mixWithOthers?: boolean
+  ): void;
 
   /**
    * Sets AVAudioSession mode, which works in conjunction with the category to determine audio mixing behavior.
@@ -48,82 +67,86 @@ declare class Sound {
    * @param mode AVAudioSession mode
    * @param mixWithOthers Can be set to true to force mixing with other audio sessions.
    */
-  static setMode(mode: AVAudioSessionMode): void
+  static setMode(mode: AVAudioSessionMode): void;
 
   /**
    * @param filenameOrFile Either absolute or relative path to the sound file or the `require` call.
    * @param basePathOrCallback Optional base path of the file. Omit this or pass '' if filename is an absolute path; you may use one of the predefined directories: Sound.MAIN_BUNDLE, Sound.DOCUMENT, Sound.LIBRARY, Sound.CACHES. If you are using `require` to define filepath, then set the callback function as the second argument.
    * @param callback Optional callback function called when load ends in either success or error. In the event of success, error is undefined.
    */
-  constructor(filenameOrFile: FilenameType | FileType, basePathOrCallback?: BasePathType | CallbackType, callback?: CallbackType)
+  constructor(
+    filenameOrFile: FilenameType | FileType,
+    basePathOrCallback?: BasePathType | CallbackType,
+    callback?: CallbackType
+  );
 
   /**
    * Return true if the sound has been loaded.
    */
-  isLoaded(): boolean
+  isLoaded(): boolean;
 
   /**
    * Plays the loaded file
    * @param onEnd - Optional callback function that gets called when the playback finishes successfully or an audio decoding error interrupts it
    */
-  play(onEnd?: (success: boolean) => void): void
+  play(onEnd?: (success: boolean) => void): void;
 
   /**
    * Pause the sound
    * @param cb - Optional callback function that gets called when the sound has been paused.
    */
-  pause(cb?: () => void): void
+  pause(cb?: () => void): void;
 
   /**
    * Stop playback and set the seek position to 0.
    * @param cb - Optional callback function that gets called when the sound has been stopped.
    */
-  stop(cb?: () => void): void
+  stop(cb?: () => void): void;
 
   /**
    * Reset the audio player to its uninitialized state (android only)
    */
-  reset(): void
+  reset(): void;
 
   /**
    * Release the audio player resource associated with the instance.
    */
-  release(): void
+  release(): void;
 
   /**
    * Return the number of channels
    * (1 for mono and 2 for stereo sound), or -1 before the sound gets loaded.
    */
-  getNumberOfChannels(): number
+  getNumberOfChannels(): number;
 
   /**
    * Return the time of audio (second)
    */
-  getDuration(): number
+  getDuration(): number;
 
   /**
    * Return the volume of the audio player (not the system-wide volume),
    * Ranges from 0.0 (silence) through 1.0 (full volume, the default)
    */
-  getVolume(): number
+  getVolume(): number;
 
   /**
    * Set the volume
    * @param value - ranging from 0.0 (silence) through 1.0 (full volume)
    */
-  setVolume(value: number): void
+  setVolume(value: number): void;
 
   /**
    * Return the stereo pan position of the audio player (not the system-wide pan)
    * Ranges from -1.0 (full left) through 1.0 (full right). The default value is 0.0 (center)
    */
-  getPan(): number
+  getPan(): number;
 
   /**
    * Set the pan value
    * @param value - ranging from -1.0 (full left) through 1.0 (full right).
    */
-  setPan(value: number): void
+  setPan(value: number): void;
 
   /**
    * Return the loop count of the audio player.
@@ -131,56 +154,73 @@ declare class Sound {
    * A positive number specifies the number of times to return to the start and play again.
    * A negative number indicates an indefinite loop.
    */
-  getNumberOfLoops(): number
+  getNumberOfLoops(): number;
 
   /**
    * Set the loop count
    * @param value - 0 means to play the sound once. A positive number specifies the number of times to return to the start and play again (iOS only). A negative number indicates an indefinite loop (iOS and Android).
    */
-  setNumberOfLoops(value: number): void
+  setNumberOfLoops(value: number): void;
 
   /**
    * Callback will receive the current playback position in seconds and whether the sound is being played.
    * @param cb
    */
-  getCurrentTime(cb?: (seconds: number, isPlaying: boolean) => void): void
+  getCurrentTime(cb?: (seconds: number, isPlaying: boolean) => void): void;
 
   /**
    * Seek to a particular playback point in seconds.
    * @param value
    */
-  setCurrentTime(value: number): void
+  setCurrentTime(value: number): void;
 
   /**
    * Speed of the audio playback (iOS Only).
    * @param value
    */
-  setSpeed(value: number): void
+  setSpeed(value: number): void;
 
   /**
    * Whether to enable playback in silence mode (iOS only)
    * @deprecated - Use the static method Sound.setCategory('Playback') instead which has the same effect.
    * @param enabled
    */
-  enableInSilenceMode(enabled: boolean): void
+  enableInSilenceMode(enabled: boolean): void;
 
   /**
    * Sets AVAudioSession category
    * @deprecated
    * @param value
    */
-  setCategory(value: AVAudioSessionCategory): void
+  setCategory(value: AVAudioSessionCategory): void;
 
   /**
    * Turn speaker phone on (android only)
    * @param value
    */
-  setSpeakerphoneOn(value: boolean): void
+  setSpeakerphoneOn(value: boolean): void;
+
+  /**
+   * Returns audio session id (android only)
+   */
+  getAudioSessionId(): void;
+
+  /**
+   * enabled or disabled filter (android only)
+   * @param value
+   */
+  enableFilter(value: boolean): void;
+
+  /**
+   * filters frequency (android only)
+   * @param value
+   */
+  filterFrequency(value: number): void;
 
   /**
    * Whether the player is playing or not.
    */
-  isPlaying(): boolean
+  isPlaying(): boolean;
 }
 
 export = Sound;

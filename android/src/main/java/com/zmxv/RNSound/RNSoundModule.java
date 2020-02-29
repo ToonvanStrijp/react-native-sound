@@ -5,6 +5,7 @@ import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
+import android.media.audiofx.Equalizer;
 import android.net.Uri;
 import android.media.AudioManager;
 
@@ -28,6 +29,8 @@ import android.util.Log;
 
 public class RNSoundModule extends ReactContextBaseJavaModule implements AudioManager.OnAudioFocusChangeListener {
   Map<Double, MediaPlayer> playerPool = new HashMap<>();
+  Map<Double, Equalizer> equalizePool = new HashMap<>();
+
   ReactApplicationContext context;
   final static Object NULL = null;
   String category;
@@ -66,7 +69,11 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
       callback.invoke(e, NULL);
       return;
     }
+
+    Equalizer equalizer = createEqualizer(player.getAudioSessionId());
+
     this.playerPool.put(key, player);
+    this.equalizePool.put(key, equalizer);
 
     final RNSoundModule module = this;
 
@@ -110,6 +117,7 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
 
         WritableMap props = Arguments.createMap();
         props.putDouble("duration", mp.getDuration() * .001);
+        props.putInt("audioSessionId", mp.getAudioSessionId());
         try {
           callback.invoke(NULL, props);
         } catch(RuntimeException runtimeException) {
@@ -206,6 +214,11 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
     }
     
     return null;
+  }
+
+  protected Equalizer createEqualizer(final Int audioSessionId) {
+    Equalizer equalizer = new Equalizer(0, audioSessionId);
+    return equalizer;
   }
 
   @ReactMethod
@@ -444,6 +457,41 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
               this.wasPlayingBeforeFocusChange = false;
             }
         }
+      }
+    }
+  }
+
+  @ReactMethod
+  public void enableFilter(final Double key, final Boolean enable) {
+    Equalizer equalizer = this.equalizePool.get(key);
+    if (equalizer != null) {
+      equalizer.setEnabled(enable);
+    }
+  }
+
+  @ReactMethod
+  public void filterFrequency(final Double key, final Int frequency) {
+    Equalizer equalizer = this.equalizePool.get(key);
+    if (equalizer != null) {
+      short min = equalizer.bandLevelRange[0];
+      short upperBand = equalizer.getBand(frequency * 1000);
+
+      if(upperBand < 0) {
+        upperBand = 0
+      }
+
+      if(upperBand >= 0) {
+        for (short i = 0; i < upperBand; i++) {
+          equalizer.setBandLevel(i, -min);
+        }
+        for(short i = upperBand; i < equalizer.getNumberOfBands(); i++) {
+          equalizer.setBandLevel(i, 0);
+        }
+
+        short low = (equalizer.getBandFreqRange(upperBand)[0] / 1000);
+        double one = 100/ (double)((equalizer.getBandFreqRange(upperBand)[1]/1000) - low);
+        double percentage = (one * (double) (frequency - low));
+        equalizer.setBandLevel(upperBand, (short) (-((min/100) * (percentage))));
       }
     }
   }
